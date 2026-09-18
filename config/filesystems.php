@@ -32,6 +32,9 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'protected'),
 
+    // Enable only when this database exclusively owns the storage prefix.
+    'sweep_orphaned_kata_uploads' => env('MEDIA_SWEEP_ORPHANED_KATA_UPLOADS', false),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks

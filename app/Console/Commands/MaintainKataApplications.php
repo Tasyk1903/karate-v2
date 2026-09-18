@@ -39,6 +39,10 @@ final class MaintainKataApplications extends Command
                     (new DeleteUnusedKataVideo($path))->handle($media);
                 }
             });
+        // A restored database may not know about files used by another environment.
+        if (! config('filesystems.sweep_orphaned_kata_uploads')) {
+            return self::SUCCESS;
+        }
         // Sweep interrupted uploads only after a grace period; the deletion job checks all references.
         foreach (Storage::disk('protected')->files('online-kata-videos') as $path) {
             if (Storage::disk('protected')->lastModified($path) < now()->subDays(7)->timestamp) {

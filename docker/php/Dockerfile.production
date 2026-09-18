@@ -1,0 +1,17 @@
+FROM php:8.5-fpm-alpine
+
+WORKDIR /var/www/html
+
+RUN apk add --no-cache freetype libjpeg-turbo libpng icu-libs icu-data-full libzip \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+        freetype-dev libjpeg-turbo-dev libpng-dev icu-dev libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j2 gd intl pdo_mysql zip pcntl \
+    && apk del .build-deps
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/kr-uploads.ini
+COPY docker/php/production.ini /usr/local/etc/php/conf.d/zz-production.ini
+COPY docker/php/production-pool.conf /usr/local/etc/php-fpm.d/zz-production.conf
+
+CMD ["php-fpm"]

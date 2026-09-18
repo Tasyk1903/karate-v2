@@ -44,7 +44,7 @@ public/brand
 
 The initial palette is based on the KR logo: red, black, white, neutral gray, and warm gold accents.
 
-## Docker
+## Local Docker
 
 Docker files are included for PHP 8.5, nginx, and MySQL 8.4.
 
@@ -65,3 +65,26 @@ The app is exposed at:
 ```text
 http://localhost:8080
 ```
+
+## Production
+
+The deployed site is https://karate-rating.ru. Use `compose.production.yaml`,
+not the local Compose file. Production runs PHP 8.5/FPM, nginx, an isolated MySQL
+8.4, a panel export worker and the Laravel scheduler. Only nginx is published,
+on `127.0.0.1:18080`; the host nginx terminates HTTPS for this domain.
+
+The server checkout is `/var/www/karate_ratin_usr/data/www/karate-rating.ru/karaterating`.
+Its private `.env` supplies separate `DB_PASSWORD` and
+`DOCKER_MYSQL_ROOT_PASSWORD`, `APP_KEY`, S3 and mail configuration. Never replace
+it with a development example or reuse the host MySQL credentials. Database
+files and deployment backups are under the ignored `.deployment/` directory.
+
+```bash
+docker compose -f compose.production.yaml ps
+docker compose -f compose.production.yaml logs --tail=100 app panel-worker scheduler
+docker compose -f compose.production.yaml exec --user 82:82 app php artisan migrate:status
+```
+
+See [production deployment and updates](docs/project-guide.md#production)
+before changing code, rebuilding containers or running migrations. Never run
+`migrate:fresh`, development seeders or volume cleanup on this deployment.

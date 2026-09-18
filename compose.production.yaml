@@ -1,0 +1,85 @@
+name: karate_rating_v2
+
+x-php: &php
+  image: karate-rating-v2-php:production
+  working_dir: /var/www/html
+  restart: unless-stopped
+  volumes:
+    - ./:/var/www/html
+  environment:
+    DB_CONNECTION: mysql
+    DB_HOST: mysql
+    DB_PORT: 3306
+    DB_DATABASE: karaterating
+    DB_USERNAME: karate_v2
+    DB_PASSWORD: ${DB_PASSWORD:?Set a dedicated database password}
+    DB_URL: ""
+    DB_SOCKET: ""
+  depends_on:
+    mysql:
+      condition: service_healthy
+  logging: &logging
+    driver: json-file
+    options:
+      max-size: 5m
+      max-file: "3"
+
+services:
+  app:
+    <<: *php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.production
+    mem_limit: 768m
+
+  panel-worker:
+    <<: *php
+    user: "82:82"
+    command: php -d memory_limit=512M artisan queue:work panel_tasks --queue=panel_tasks --sleep=3 --tries=1 --timeout=600 --memory=512 --max-jobs=20
+    mem_limit: 640m
+
+  scheduler:
+    <<: *php
+    user: "82:82"
+    command: php artisan schedule:work
+    mem_limit: 256m
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18080:80"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/production.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    mem_limit: 64m
+    logging: *logging
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: karaterating
+      MYSQL_USER: karate_v2
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set a dedicated database password}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD:?Set a dedicated root password}
+    volumes:
+      - ${MYSQL_DATA_DIR:-./.deployment/mysql}:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-buffer-pool-size=256M
+      - --innodb-redo-log-capacity=64M
+      - --max-connections=60
+      - --skip-log-bin
+      - --event-scheduler=OFF
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h 127.0.0.1 -u root --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    mem_limit: 1024m
+    logging: *logging

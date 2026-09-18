@@ -346,6 +346,21 @@ class OnlineKataPaymentsTest extends TestCase
         $this->get('/online-kata/payment/complete?application='.Str::uuid())->assertOk();
     }
 
+    public function test_orphan_sweep_requires_exclusive_storage_opt_in(): void
+    {
+        $path = 'online-kata-videos/other-environment.mp4';
+        Storage::disk('protected')->put($path, 'video');
+        touch(Storage::disk('protected')->path($path), now()->subDays(8)->timestamp);
+
+        $this->assertFalse(config('filesystems.sweep_orphaned_kata_uploads'));
+        $this->artisan('kata:maintain-applications')->assertSuccessful();
+        Storage::disk('protected')->assertExists($path);
+
+        config(['filesystems.sweep_orphaned_kata_uploads' => true]);
+        $this->artisan('kata:maintain-applications')->assertSuccessful();
+        Storage::disk('protected')->assertMissing($path);
+    }
+
     public function test_database_failure_does_not_partially_fulfill_and_retry_uses_same_payment(): void
     {
         $a = $this->create();
