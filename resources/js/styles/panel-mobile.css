@@ -1,0 +1,201 @@
+.panel-mobile-nav, .panel-mobile-menu:not([open]) { display: none; }
+.mobile-bracket-controls { display: none; }
+.panel-app .mobile-template-move { display: none; }
+.panel-menu-open { overflow: hidden; }
+.panel-mobile-menu { color: var(--panel-text); background: var(--panel-card-solid); border: 1px solid var(--panel-line); border-radius: 8px; padding: 18px; width: min(440px, calc(100% - 24px)); max-height: calc(100dvh - 32px); overflow-y: auto; }
+.panel-mobile-menu[open] { display: flex; flex-direction: column; }
+.panel-mobile-menu-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; flex: 1; }
+.panel-mobile-menu::backdrop { background: rgb(0 0 0 / .55); }
+.panel-mobile-menu header { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+.panel-mobile-menu header img { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; }
+.panel-mobile-menu header strong { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.panel-mobile-menu button { min-height: 44px; color: inherit; background: none; border: 0; font: inherit; cursor: pointer; }
+.panel-mobile-menu header button { width: 44px; flex-shrink: 0; display: grid; place-items: center; }
+.mobile-menu-user { display: grid; gap: 4px; padding: 18px 0; border-bottom: 1px solid var(--panel-line); overflow-wrap: anywhere; }
+.mobile-menu-user small { color: var(--panel-muted); }
+.panel-mobile-menu nav { display: grid; gap: 4px; padding: 12px 0; }
+.panel-mobile-menu nav button { display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px; border-radius: 6px; }
+.panel-mobile-menu nav button span { min-width: 0; overflow-wrap: anywhere; }
+.panel-mobile-menu nav button svg { width: 22px; height: 22px; flex-shrink: 0; }
+.panel-mobile-menu nav button.active { color: var(--panel-red); background: var(--panel-soft); }
+.panel-mobile-menu .mobile-menu-logout { border-top: 1px solid var(--panel-line); width: 100%; text-align: left; color: var(--panel-red); flex-shrink: 0; }
+
+@media (max-width: 1024px) {
+    .panel-mobile-menu { position: fixed; inset: 0; margin: 0; box-sizing: border-box; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; border: 0; border-radius: 0; overflow: hidden; padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+    .panel-mobile-menu header { padding-bottom: 12px; border-bottom: 1px solid var(--panel-line); }
+    .panel-app { padding: 12px 12px calc(82px + env(safe-area-inset-bottom)); }
+    .panel-app .panel-sidebar { display: none; }
+    .panel-app .panel-main { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+    .panel-app .exam-filter-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel-app .rating-filters-card { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .panel-app .tournament-filters-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel-app .tournament-grid { grid-template-columns: minmax(0, 1fr); }
+    .panel-app .tournament-grid .tournament-card h2 { overflow-wrap: anywhere; }
+    .panel-app .championship-item-card { grid-template-columns: 120px minmax(0, 1fr); gap: 12px; }
+    .panel-app .championship-item-actions { grid-column: 2; display: flex; flex-wrap: wrap; }
+    .panel-app .championship-item-actions > :is(a, button) { width: auto; min-width: 42px; min-height: 42px; padding: 8px; }
+    .panel-app .team-form-meta-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel-app .championship-item-main header { flex-wrap: wrap; }
+    .panel-app .championship-item-main h2, .panel-app .team-form-meta-row dd { white-space: normal; overflow-wrap: anywhere; }
+    .panel-app .exam-stat-card span { white-space: normal; overflow-wrap: anywhere; }
+    .panel-app .panel-mobile-nav { position: fixed; z-index: 55; left: 0; right: 0; bottom: 0; display: flex; padding: 6px max(8px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid var(--panel-line); background: var(--panel-card-solid); }
+    .panel-mobile-nav button { flex: 1; min-width: 0; min-height: 52px; border: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; padding: 4px; background: none; color: var(--panel-muted); font: inherit; font-size: 11px; line-height: 1.3; cursor: pointer; }
+    .panel-mobile-nav button.active { color: var(--panel-red); font-weight: 600; }
+    .panel-mobile-nav svg { width: 21px; height: 21px; }
+    .panel-app :focus-visible { outline: 2px solid var(--panel-red); outline-offset: 3px; }
+    .panel-app .panel-topbar { gap: 12px; padding: 10px 14px; border-radius: 8px; box-shadow: none; }
+    .panel-app .tournament-detail-layout { display: flex; flex-direction: column; min-width: 0; }
+    .panel-app .tournament-detail-layout > * { min-width: 0; width: 100%; }
+    .panel-app .tournament-detail-side { order: 1; }
+    .panel-app .tournament-side-art { display: none; }
+    .panel-app .downloads-card { display: flex; flex-wrap: wrap; gap: 8px; }
+    .panel-app .downloads-card h2 { flex-basis: 100%; }
+    .panel-app .downloads-card a { flex: 1 1 180px; margin: 0; }
+    .panel-app .bracket-tree { display: block; padding: 12px; }
+    .panel-app .bracket-tree .bracket-column:not(.mobile-round-active) { display: none; }
+    .panel-app .mobile-bracket-controls { display: flex; gap: 8px; padding: 12px; border-bottom: 1px solid var(--panel-line); }
+    .mobile-bracket-controls button { min-width: 44px; height: 44px; display: grid; place-items: center; }
+    .mobile-bracket-controls select { flex: 1; min-width: 0; padding: 8px; text-align: center; }
+    .mobile-bracket-controls :is(button, select) { color: var(--panel-text); background: var(--panel-card-solid); border: 1px solid var(--panel-line); border-radius: 6px; }
+    .mobile-bracket-controls button:disabled { opacity: .35; }
+    .panel-app .bracket-tree .bracket-column { flex: 0 0 min(360px, 100%); grid-template-rows: auto 1fr; scroll-snap-align: start; scroll-margin-left: 12px; }
+    .panel-app .bracket-column-matches { display: flex; flex-direction: column; gap: 12px; }
+    .panel-app .bracket-match-slot { display: block; }
+    .panel-app .bracket-match-slot::before, .panel-app .bracket-match-slot::after, .panel-app .bracket-pair-connector { display: none; }
+    .panel-app .bracket-third-place-card { position: static; transform: none; margin-top: 16px; }
+    .panel-app .bracket-third-place-card .bracket-third-label { position: static; }
+    .panel-app .bracket-match { width: 100%; min-width: 0; }
+    .panel-app .bracket-participant { min-height: 58px; }
+    .panel-app .bracket-participant strong, .panel-app .bracket-participant small { white-space: normal; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 720px) {
+    .panel-app { padding: 8px 10px calc(80px + env(safe-area-inset-bottom)); }
+    .panel-app *, .modal-backdrop * { letter-spacing: 0; }
+    .panel-app .panel-topbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; }
+    .panel-app .breadcrumbs { flex: 1 1 100%; font-size: 13px; line-height: 1.4; }
+    .panel-app .top-actions { display: flex; justify-content: flex-end; flex-wrap: nowrap; gap: 10px; }
+    .panel-app .top-actions .theme-switch { width: 44px; height: 40px; padding: 4px; }
+    .panel-app .theme-switch span, .panel-app.is-dark .theme-switch span { transform: none; width: 30px; height: 30px; }
+    .panel-app .panel-icon-button, .panel-app .top-logout, .panel-app .profile-pill { min-width: 40px; min-height: 40px; }
+    .panel-app .panel-locale { height: 40px; width: 86px; }
+    .panel-app .panel-locale button { min-height: 34px; }
+    .panel-app :is(h1, .student-profile-main h1, .team-heading h1, .tournament-detail-title h1) { font-size: 20px; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+    .panel-app h2 { font-size: 16px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+    .panel-app .team-heading p { margin: 4px 0 0; font-size: 13px; }
+    .panel-app :is(.page-hero, .filters-card, .data-card, .team-card, .student-section-card, .tournament-tab-panel, .tournament-edit-panel, .tournament-info-card, .exam-info-card, .exam-summary-card) { border-radius: 8px; box-shadow: none; min-width: 0; }
+    .panel-app .page-hero { gap: 10px; padding: 14px; }
+    .panel-app .hero-icon { width: 38px; height: 38px; }
+    .panel-app .team-heading { display: flex; align-items: stretch; flex-direction: column; gap: 12px; }
+    .panel-app .tournament-heading { flex-wrap: wrap; gap: 10px; }
+    .panel-app .tournament-heading h1 { flex: 1 1 100%; margin: 0; }
+    .panel-app .tournament-heading > :is(a, button) { flex: 1 1 140px; min-width: 0; }
+    .panel-app .team-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .panel-app .team-stat-card { padding: 10px; min-height: 76px; border-radius: 8px; box-shadow: none; grid-template-columns: 24px minmax(0, 1fr); gap: 6px; }
+    .panel-app .team-stat-card i { grid-row: auto; width: 24px; height: 24px; border-radius: 4px; }
+    .panel-app .team-stat-card svg { width: 18px; height: 18px; }
+    .panel-app .team-stat-card span { grid-column: 1 / -1; font-size: 11px; font-weight: 500; overflow-wrap: anywhere; }
+    .panel-app .team-stat-card strong { font-size: 22px; }
+    .panel-app :is(.team-tabs, .student-detail-tabs, .tournament-detail-tabs) { gap: 0; border-radius: 8px; max-width: 100%; }
+    .panel-app :is(.team-tabs, .student-detail-tabs, .tournament-detail-tabs) button { min-width: max-content; min-height: 44px; padding: 10px 14px; font-size: 13px; }
+    .panel-app :is(.team-tools, .tournament-tab-toolbar, .tournament-student-filters, .tournament-toolbar-actions, .generated-pools-tools, .exam-student-tools, .bracket-toolbar, .kata-table-toolbar, .filter-actions) { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .panel-app :is(.team-tools, .tournament-tab-toolbar, .tournament-student-filters, .generated-pools-tools, .exam-student-tools) { padding: 12px; }
+    .panel-app :is(.table-search, .compact-search) { flex: 1 1 100%; min-width: 0; width: 100%; }
+    .panel-app :is(.team-sort, .team-tools > button, .filter-actions > button, .tournament-toolbar-actions > button, .tournament-toolbar-actions > a) { flex: 1 1 120px; width: auto; min-width: 0; }
+    .panel-app :is(.soft-button, .apply-button, .create-button, .save-button, .danger-button, .excel-download-button, .pdf-download-button) { min-height: 42px; max-width: 100%; height: auto; white-space: normal; line-height: 1.35; font-size: 13px; padding: 10px 12px; }
+    .panel-app :is(button, a) > svg { flex-shrink: 0; max-width: 24px; max-height: 24px; }
+    .panel-app :is(input:not([type=checkbox]):not([type=radio]), select, textarea), .modal-backdrop :is(input:not([type=checkbox]):not([type=radio]), select, textarea) { min-width: 0; max-width: 100%; font-size: 16px; }
+    .panel-app :is(input[type=checkbox], input[type=radio]), .modal-backdrop :is(input[type=checkbox], input[type=radio]) { width: 20px; height: 20px; flex-shrink: 0; }
+    .panel-app :is(.organization-code-row, .inline-table-title, .filters-footer) { flex-wrap: wrap; gap: 10px; min-width: 0; }
+    .panel-app .organization-code-row code { overflow-wrap: anywhere; min-width: 0; }
+    .panel-app :is(.table-scroll, .tournament-detail-table, .student-tournaments-card, .kata-table-shell) { margin: 0; padding: 0; min-width: 0; width: 100%; }
+    .panel-app .responsive-table, .modal-backdrop .responsive-table { display: block; width: 100%; min-width: 0; table-layout: auto; }
+    .panel-app .responsive-table thead, .modal-backdrop .responsive-table thead { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+    .panel-app .responsive-table thead:has(input), .modal-backdrop .responsive-table thead:has(input) { position: static; width: auto; height: auto; clip-path: none; padding: 8px 12px; }
+    .panel-app .responsive-table thead:has(input) tr { display: block; }
+    .panel-app .responsive-table thead:has(input) th { display: none; }
+    .panel-app .responsive-table thead:has(input) th:has(input) { display: flex; align-items: center; gap: 10px; width: auto; padding: 4px; border: 0; }
+    .panel-app .responsive-table th:has(input)::after { content: attr(data-mobile-label); font-size: 13px; font-weight: 500; }
+    .panel-app .responsive-table tbody, .modal-backdrop .responsive-table tbody { display: block; }
+    .panel-app .responsive-table tbody > tr, .modal-backdrop .responsive-table tbody > tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; padding: 16px 12px; border-bottom: 1px solid var(--panel-line); }
+    .panel-app .responsive-table tbody > tr > td, .modal-backdrop .responsive-table tbody > tr > td { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: auto; min-width: 0; max-width: none; padding: 0; border: 0; text-align: left; white-space: normal; overflow-wrap: anywhere; font-size: 13px; line-height: 1.45; }
+    .panel-app .responsive-table tbody > tr > td, .modal-backdrop .responsive-table tbody > tr > td { height: auto; overflow: visible; }
+    .panel-app .responsive-table tbody > tr > td::before, .modal-backdrop .responsive-table tbody > tr > td::before { content: attr(data-mobile-label); color: var(--panel-muted); font-size: 11px; font-weight: 500; }
+    .panel-app .responsive-table tbody > tr > td[data-mobile-label=""]::before { display: none; }
+    .panel-app .responsive-table td.mobile-cell-wide, .modal-backdrop .responsive-table td.mobile-cell-wide { grid-column: 1 / -1; }
+    .panel-app .responsive-table td.mobile-cell-avatar { grid-column: 1 / -1; }
+    .panel-app .responsive-table tr:has(td.mobile-cell-avatar) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .panel-app .responsive-table tr:has(td.mobile-cell-avatar) > td { grid-column: span 2; }
+    .panel-app .responsive-table tr:has(td.mobile-cell-avatar) > td.mobile-cell-wide { grid-column: 1 / -1; }
+    .panel-app .responsive-table tr:has(td.mobile-cell-avatar) > td.mobile-cell-avatar { grid-column: span 1; justify-content: center; }
+    .panel-app .responsive-table tr > td.mobile-cell-avatar::before { display: none; }
+    .panel-app .responsive-table tr:has(td.mobile-cell-avatar) > td.mobile-cell-avatar + td { grid-column: span 3; }
+    .panel-app .responsive-table td.drag-col { display: none; }
+    .panel-app .row-actions .mobile-template-move { display: inline-flex; }
+    .panel-app .form-row-actions { flex-wrap: wrap; gap: 8px; }
+    .panel-app .form-row-actions :is(button, a) { width: 40px; min-width: 40px; min-height: 40px; }
+    .panel-app .responsive-table td.empty-cell { grid-column: 1 / -1; min-height: 80px; justify-content: center; align-items: center; }
+    .panel-app .responsive-table :is(strong, small, .rank-badge, .score-badge) { white-space: normal; overflow-wrap: anywhere; }
+    .panel-app .responsive-table .row-actions { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; width: 100%; }
+    .panel-app .responsive-table .row-actions :is(button, a) { min-width: 40px; min-height: 40px; }
+    .panel-app .responsive-table :is(.list-row-actions, .tournament-list-actions) { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+    .panel-app .responsive-table .table-row-actions { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; min-width: 0; }
+    .panel-app .responsive-table .table-row-actions :is(button, a) { min-height: 40px; min-width: 40px; }
+    .panel-app .responsive-table .list-actions-grid .generate { flex: 1; width: auto; min-width: 0; white-space: normal; height: auto; font-size: 12px; }
+    .panel-app .kata-score-table .responsive-table tbody > tr { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px 4px; }
+    .panel-app .kata-score-table .responsive-table td { grid-column: span 2; }
+    .panel-app .kata-score-table .responsive-table td[data-mobile-column="1"] { grid-column: span 8; }
+    .panel-app .kata-score-table .responsive-table td:nth-last-child(-n+2) { grid-column: span 5; }
+    .panel-app .kata-score-table .responsive-table input { width: 100%; padding: 8px 2px; }
+    .panel-app .table-footer { padding: 12px; gap: 12px; font-size: 12px; }
+    .panel-app .pagination { display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0; border: 0; background: none; }
+    .panel-app .pagination select { width: 70px; min-width: 70px; height: 40px; }
+    .panel-app .pagination > span { flex: 1 1 calc(100% - 84px); }
+    .panel-app .pagination button { width: 36px; min-width: 36px; height: 40px; }
+    .panel-app .pagination .mobile-page-hidden { display: none; }
+    .panel-app .pagination > .expand-page-button { flex: 1 1 100%; width: auto; }
+    .modal-backdrop { padding: 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); align-items: center; }
+    .modal-backdrop :is(.template-modal, .tournament-create-modal, .document-lightbox) { width: 100%; max-width: 100%; min-width: 0; max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; border-radius: 8px; padding: 16px; }
+    .modal-backdrop :is(.modal-section, .three-columns, .tournament-type-grid, .online-kata-modal-layout) { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+    .modal-backdrop :is(header, footer) { gap: 10px; flex-wrap: wrap; }
+    .modal-backdrop h2 { font-size: 18px; line-height: 1.4; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+    .modal-backdrop :is(button, input, select) { min-height: 42px; }
+    .modal-backdrop footer { display: flex; justify-content: flex-end; }
+    .modal-backdrop footer > button { flex: 1 1 120px; width: auto; }
+    .panel-app :is(.tournament-info-grid, .tournament-edit-panel .modal-section, .exam-info-grid, .settings-grid, .about-grid) { grid-template-columns: minmax(0, 1fr); }
+    .panel-app .student-profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .panel-app .student-rating-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; }
+    .panel-app :is(.student-rating-card, .student-record-card) { padding: 16px; min-height: 0; }
+    .panel-app .student-rating-card > strong { font-size: 28px; }
+    .panel-app .student-documents-table { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+    .panel-app .student-info-chip { min-height: 70px; padding: 12px; }
+    .panel-app .student-photo-panel { min-height: 0; max-height: 260px; }
+    .panel-app .student-photo-panel img { max-height: 260px; object-fit: contain; }
+    .panel-app :is(.bracket-podium, .round-robin-fight-row, .round-robin-winners) { grid-template-columns: minmax(0, 1fr); }
+    .panel-app .account-page { min-height: 0; padding: 16px 12px; }
+    .panel-app .account-pager { flex-wrap: wrap; }
+    .panel-app .exam-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .panel-app .exam-stat-card { padding: 12px; gap: 8px; border-radius: 8px; }
+    .panel-app .exam-filter-card { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px; }
+    .panel-app .exam-detail-grid { grid-template-columns: minmax(0, 1fr); }
+    .panel-app .exam-summary-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; gap: 12px; }
+    .panel-app .exam-summary-actions { grid-column: 1 / -1; }
+    .panel-app .exam-heading { flex-wrap: wrap; gap: 12px; }
+    .panel-app :is(.rating-filters-card, .tournament-filters-card) { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; gap: 10px; border-radius: 8px; box-shadow: none; }
+    .panel-app .tournament-search { grid-column: 1 / -1; }
+    .panel-app .rating-grid-v2, .panel-app .organization-settings-grid { grid-template-columns: minmax(0, 1fr); }
+    .panel-app .rating-heading { flex-wrap: wrap; gap: 10px; }
+    .panel-app .rating-card-v2 { border-radius: 8px; box-shadow: none; }
+    .panel-app .championship-detail-hero { flex-wrap: wrap; gap: 12px; padding: 12px; }
+    .panel-app .championship-detail-actions { flex-wrap: wrap; width: 100%; }
+    .panel-app .championship-detail-actions > * { flex: 1 1 120px; min-width: 0; }
+    .panel-app .championship-detail-actions > .panel-icon-button { flex: 0 0 42px; }
+    .panel-app .championship-item-card { grid-template-columns: minmax(0, 1fr); padding: 12px; border-radius: 8px; box-shadow: none; }
+    .panel-app .championship-item-cover { height: 120px; min-height: 0; border-radius: 6px; }
+    .panel-app .championship-item-cover img { object-fit: contain; }
+    .panel-app .championship-item-actions { grid-column: 1; justify-content: flex-end; }
+    .panel-app .team-form-meta-row { gap: 12px; }
+    .panel-app .team-form-meta-row dd { font-size: 13px; font-weight: 500; }
+    .panel-app .team-form-meta-row dt, .panel-app .team-form-bottom-row dt { font-size: 11px; font-weight: 500; }
+    .panel-app .settings-toggle-card { min-width: 0; padding: 14px; }
+}

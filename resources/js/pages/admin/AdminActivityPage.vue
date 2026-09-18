@@ -1,0 +1,20 @@
+<script setup>
+import AdminSearch from '../../components/admin/AdminSearch.vue';
+import { activateAdminRow } from '../../components/admin/rowAction';
+import { computed, reactive, ref } from 'vue';
+import { Eye } from '@lucide/vue';
+import { adminLabels } from '../../i18n/admin';
+import { activityAction, activityFields } from '../../i18n/activity';
+import { useAdminList } from '../../composables/useAdminList';
+import AdminPager from '../../components/admin/AdminPager.vue';
+import AdminDialog from '../../components/admin/AdminDialog.vue';
+const props = defineProps({ locale: String });
+const t = computed(() => adminLabels[props.locale]);
+const filters = reactive({ actor: '', target: '', from: '', to: '' }), detail = ref(null);
+const { rows, page, last, total, range, loading, search, error, request, load, run } = useAdminList(() => '/api/admin/activity', () => t.value, () => ({ ...filters, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }));
+function open(row) { run(async () => detail.value = await request('/api/admin/activity/' + row.id)); }
+function value(v) { return v === null || v === undefined ? '—' : typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v); }
+function date(v) { return new Date(v.includes('T') ? v : v.replace(' ', 'T') + 'Z').toLocaleString(props.locale); }
+</script>
+<template><div class="admin-toolbar"><AdminSearch v-model="search" :t="t"/></div><div class="admin-filters"><label>{{ t.actor }}<input v-model="filters.actor" type="search"></label><label>{{ t.target }}<input v-model="filters.target" type="search"></label><label>{{ t.from }}<input v-model="filters.from" type="date"></label><label>{{ t.to }}<input v-model="filters.to" type="date"></label></div><p v-if="error" role="alert" class="admin-error">{{ error }} <button @click="load(page)">{{ t.retry }}</button></p><p v-if="loading" class="admin-empty">{{ t.loading }}</p><table v-else v-responsive-table class="admin-table"><thead><tr><th>{{ t.object }}</th><th>{{ t.actor }}</th><th>{{ t.target }}</th><th>{{ t.date }}</th><th class="admin-actions">{{ t.actions }}</th></tr></thead><tbody><tr v-for="row in rows" :key="row.id" class="admin-interactive-row" @click="activateAdminRow($event, () => open(row))"><td>{{ t.objects[row.object_type] || row.object_type }} #{{ row.object_id }}<br><span v-if="row.object_name">{{ row.object_name }}<br></span><small>{{ activityAction(row.event, locale) }}</small></td><td>{{ row.actor?.name || t.system }}<br><small v-if="row.actor">#{{ row.actor.id }}</small></td><td>{{ row.target?.name || '—' }}<br><small v-if="row.target">#{{ row.target.id }}</small></td><td>{{ date(row.created_at) }}</td><td class="admin-actions"><button class="admin-open-action" :title="t.open" :aria-label="t.open" @click="open(row)"><Eye :size="18"/></button></td></tr></tbody></table><p v-if="!loading && !rows.length" class="admin-empty">{{ t.empty }}</p><AdminPager :page="page" :last="last" :total="total" :range="range" :busy="loading" :t="t" @page="load"/>
+<AdminDialog v-if="detail" :title="`${t.objects[detail.object_type] || detail.object_type} #${detail.object_id}`" :t="t" @close="detail = null"><div class="admin-detail-meta"><span><small>{{ t.actor }}</small>{{ detail.actor?.name || t.system }}</span><span><small>{{ t.target }}</small>{{ detail.target?.name || '—' }}</span><span><small>{{ t.date }}</small>{{ date(detail.created_at) }}</span></div><p>{{ activityAction(detail.event, locale) }}</p><div class="admin-diff"><strong>{{ t.old }} / {{ t.new }}</strong></div><div v-for="change in detail.changes" :key="change.field" class="admin-diff"><strong>{{ activityFields[locale][change.field] || change.field }}</strong><pre><small>{{ t.old }}</small>{{ value(change.old) }}</pre><pre><small>{{ t.new }}</small>{{ value(change.new) }}</pre></div><p v-if="!detail.changes.length">{{ t.noDiff }}</p><details v-if="Object.keys(detail.context).length"><summary>{{ t.context }}</summary><pre class="admin-context">{{ JSON.stringify(detail.context, null, 2) }}</pre></details></AdminDialog></template>

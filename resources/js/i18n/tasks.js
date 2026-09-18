@@ -1,0 +1,4 @@
+export const taskLabels = {
+ ru: { previousPage: 'Предыдущая страница', nextPage: 'Следующая страница', refresh: 'Повторить', title: 'Подготовка файла', generate: 'Генерация сеток', queued: 'В очереди', processing: 'Выполняется', ready: 'Готово', failed: 'Операция не выполнена. Повторите её с исходной страницы.', expired: 'Срок хранения истёк', download: 'Скачать файл', back: 'Вернуться', retry: 'Повторить', error: 'Не удалось получить состояние' },
+ en: { previousPage: 'Previous page', nextPage: 'Next page', refresh: 'Retry', title: 'Preparing file', generate: 'Generating brackets', queued: 'Queued', processing: 'Processing', ready: 'Ready', failed: 'Operation failed. Start it again from the source page.', expired: 'Expired', download: 'Download file', back: 'Back', retry: 'Retry', error: 'Unable to load status' },
+};

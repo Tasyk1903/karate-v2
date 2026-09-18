@@ -1,0 +1,26 @@
+export const accountTranslations = {
+    ru: {
+        accountAgreementTypes: { terms_of_service: 'Пользовательское соглашение', privacy_policy: 'Политика конфиденциальности', data_processing_consent: 'Согласие на обработку персональных данных' },
+        accountTooMany: 'Слишком много запросов. Подождите минуту и повторите.', accountForbidden: 'Недостаточно прав для этого действия.', accountMissing: 'Запись не найдена.',
+        accountProfile: 'Профиль', organizationName: 'Название организации', accountSave: 'Сохранить', accountSaved: 'Изменения сохранены',
+        accountAvatar: 'Аватар', accountUpload: 'Загрузить фото', accountRemoveAvatar: 'Убрать фото', accountError: 'Не удалось выполнить запрос. Попробуйте ещё раз.', accountRetry: 'Повторить',
+        accountNotifications: 'Уведомления', accountRead: 'Отметить прочитанным', accountReadAll: 'Отметить все прочитанными', accountReadStatus: 'Прочитано', accountUnread: 'Непрочитанные', accountNoNotifications: 'Уведомлений пока нет',
+        accountAgreements: 'Соглашения', accountAccepted: 'Согласие получено', accountAccept: 'Подтвердить согласие', accountAcceptCheck: 'Я прочитал(а) и согласен(на) с этим документом', accountRequired: 'Требуется согласие', accountNoAgreements: 'Соглашений пока нет', accountBack: 'Назад', accountContinue: 'Перейти в панель',
+        accountUpcoming: 'Ближайшие турниры', accountNoTournaments: 'Ближайших турниров нет', accountTrainers: 'Тренеры', accountStudents: 'Ученики', accountPending: 'Ожидают приглашения', accountAllTournaments: 'Все чемпионаты',
+        accountPrevious: 'Предыдущая страница', accountNext: 'Следующая страница', accountPage: 'Страница',
+        accountRoles: { Organization: 'Организатор', Secretary: 'Секретарь', Coach: 'Тренер', Student: 'Ученик', Judge: 'Судья', super_admin: 'Супер-администратор', Master: 'Мастер', Admin: 'Администратор', admin: 'Администратор' },
+        accountForgot: 'Восстановление пароля', accountSendReset: 'Отправить ссылку', accountNewPassword: 'Новый пароль', accountConfirmPassword: 'Повторите пароль', accountChangePassword: 'Изменить пароль', accountLogin: 'Войти', accountShowPassword: 'Показать пароль', accountHidePassword: 'Скрыть пароль',
+    },
+    en: {
+        accountAgreementTypes: { terms_of_service: 'Terms of service', privacy_policy: 'Privacy policy', data_processing_consent: 'Personal data processing consent' },
+        accountTooMany: 'Too many requests. Wait a minute and try again.', accountForbidden: 'You do not have permission for this action.', accountMissing: 'The record was not found.',
+        accountProfile: 'Profile', organizationName: 'Organization name', accountSave: 'Save', accountSaved: 'Changes saved',
+        accountAvatar: 'Avatar', accountUpload: 'Upload photo', accountRemoveAvatar: 'Remove photo', accountError: 'The request failed. Please try again.', accountRetry: 'Retry',
+        accountNotifications: 'Notifications', accountRead: 'Mark as read', accountReadAll: 'Mark all as read', accountReadStatus: 'Read', accountUnread: 'Unread', accountNoNotifications: 'No notifications yet',
+        accountAgreements: 'Agreements', accountAccepted: 'Consent recorded', accountAccept: 'Confirm consent', accountAcceptCheck: 'I have read and agree to this document', accountRequired: 'Consent required', accountNoAgreements: 'No agreements yet', accountBack: 'Back', accountContinue: 'Go to dashboard',
+        accountUpcoming: 'Upcoming tournaments', accountNoTournaments: 'No upcoming tournaments', accountTrainers: 'Coaches', accountStudents: 'Students', accountPending: 'Pending invitations', accountAllTournaments: 'All championships',
+        accountPrevious: 'Previous page', accountNext: 'Next page', accountPage: 'Page',
+        accountRoles: { Organization: 'Organizer', Secretary: 'Secretary', Coach: 'Coach', Student: 'Student', Judge: 'Judge', super_admin: 'Super administrator', Master: 'Master', Admin: 'Administrator', admin: 'Administrator' },
+        accountForgot: 'Password recovery', accountSendReset: 'Send recovery link', accountNewPassword: 'New password', accountConfirmPassword: 'Confirm password', accountChangePassword: 'Change password', accountLogin: 'Sign in', accountShowPassword: 'Show password', accountHidePassword: 'Hide password',
+    },
+};
