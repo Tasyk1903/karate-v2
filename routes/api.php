@@ -38,6 +38,7 @@ use App\Http\Middleware\MobileRoles;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
+require __DIR__.'/offline.php';
 Route::post('/payment-callback', [PaymentCallbackController::class, 'callback'])->middleware('throttle:120,1');
 
 Route::prefix('mobile')->group(function (): void {

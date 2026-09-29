@@ -4,6 +4,7 @@ namespace App\Services\Tournaments;
 
 use App\Models\Tournament;
 use App\Models\User;
+use App\Services\Offline\OfflineReplay;
 
 final class TournamentLifecycle
 {
@@ -33,6 +34,7 @@ final class TournamentLifecycle
 
     public static function canManage(User $user, Tournament $tournament): bool
     {
-        return self::owns($user, $tournament) && self::active($tournament);
+        return self::owns($user, $tournament) && (self::active($tournament)
+            || OfflineReplay::permits($tournament));
     }
 }

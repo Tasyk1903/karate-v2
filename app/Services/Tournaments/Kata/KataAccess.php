@@ -10,11 +10,11 @@ final class KataAccess
 {
     public static function fields(User $user, Tournament $tournament): array
     {
-        if (! TournamentLifecycle::active($tournament)) {
-            return [];
-        }
         if (TournamentLifecycle::canManage($user, $tournament)) {
             return KataScores::FIELDS;
+        }
+        if (! TournamentLifecycle::active($tournament)) {
+            return [];
         }
 
         return JudgeKataAccess::views($user, $tournament) && in_array($user->judge_position, KataScores::FIELDS, true) ? [$user->judge_position] : [];
