@@ -94,6 +94,31 @@ class OfflineSyncTest extends TestCase
         $this->postJson('/api/offline/login', ['email' => $coach->email, 'password' => 'password'])->assertUnprocessable();
     }
 
+    public function test_catalog_returns_list_tatami_for_brackets_and_kata_without_changing_sync_revision(): void
+    {
+        $snapshot = $this->snapshot();
+        $this->list->tournament->update(['tatami' => 3]);
+        $this->list->update(['tatami' => 'A']);
+        // The whole-list assignment, not a fight label, drives the catalog filter.
+        $this->pool->update(['tatami' => 'B']);
+        $kataList = ListTournament::create(['tournament_id' => $this->list->tournament_id, 'template_student_list_id' => $this->list->template_student_list_id, 'tatami' => 'C']);
+        KataPool::create(['student_id' => $this->pool->student_id, 'tournament_id' => $this->list->tournament_id, 'list_id' => $kataList->id, 'round' => 'PRELIMINARY STAGE', 'participant_number' => 1]);
+        $emptyList = ListTournament::create(['tournament_id' => $this->list->tournament_id, 'template_student_list_id' => $this->list->template_student_list_id]);
+
+        foreach ([$this->org, $this->user('Secretary', ['organization_id' => $this->org->id])] as $actor) {
+            $response = $this->withToken($this->login($actor))->getJson('/api/offline/tournaments')->assertOk()->assertJsonPath('data.0.tatami_count', 3);
+            $lists = collect($response->json('data.0.lists'))->keyBy('id');
+            $this->assertSame('A', $lists[$this->list->id]['tatami']);
+            $this->assertTrue($lists[$this->list->id]['prepared']);
+            $this->assertSame('C', $lists[$kataList->id]['tatami']);
+            $this->assertTrue($lists[$kataList->id]['prepared']);
+            $this->assertNull($lists[$emptyList->id]['tatami']);
+            $this->assertFalse($lists[$emptyList->id]['prepared']);
+        }
+        $this->withToken($this->login($this->user('Organization')))->getJson('/api/offline/tournaments')->assertOk()->assertJsonCount(0, 'data');
+        $this->assertSame($snapshot['revision'], $this->snapshot()['revision']);
+    }
+
     public function test_retry_is_idempotent_and_changed_reuse_rejected(): void
     {
         $batch = $this->batch($this->snapshot());

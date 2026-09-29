@@ -20,7 +20,7 @@ final class OfflineTournamentController extends Controller
         $page = Tournament::where('organization_id', $org)->whereHas('championship', fn ($q) => $q->where('organization_id', $org))
             ->whereDate('date_finish', '>=', today())->with('championship:id,name')->with(['listTournaments' => fn ($q) => $q->with('templateStudentList:id,name')->withCount(['pools', 'kataPools'])])
             ->orderBy('date')->orderBy('id')->paginate(20);
-        $rows = $page->getCollection()->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'championship' => $t->championship->name, 'date' => $t->date?->toDateString(), 'date_finish' => $t->date_finish?->toDateString(), 'lists' => $t->listTournaments->map(fn ($l) => ['id' => $l->id, 'name' => $l->templateStudentList?->name, 'prepared' => $l->pools_count + $l->kata_pools_count > 0])->values()]);
+        $rows = $page->getCollection()->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'championship' => $t->championship->name, 'date' => $t->date?->toDateString(), 'date_finish' => $t->date_finish?->toDateString(), 'tatami_count' => (int) $t->tatami, 'lists' => $t->listTournaments->map(fn ($l) => ['id' => $l->id, 'name' => $l->templateStudentList?->name, 'tatami' => $l->tatami, 'prepared' => $l->pools_count + $l->kata_pools_count > 0])->values()]);
 
         return response()->json(['data' => $rows, 'last_page' => $page->lastPage(), 'engine' => OfflineSnapshot::engineVersion(), 'protocol' => OfflineSnapshot::PROTOCOL]);
     }
