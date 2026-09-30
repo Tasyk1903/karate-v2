@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import FileDropzone from '../../components/panel/FileDropzone.vue';
 import ChampionshipEditor from '../../components/panel/ChampionshipEditor.vue';
+import ChampionshipDocuments from '../../components/panel/ChampionshipDocuments.vue';
 import TournamentDeleteButton from '../../components/panel/TournamentDeleteButton.vue';
 import TournamentBulkAction from '../../components/panel/TournamentBulkAction.vue';
 import { Pencil } from '@lucide/vue';
@@ -327,6 +328,7 @@ function downloadParticipants() {
         <button type="button" :class="{ active: activeDetailTab === 'forms' }" @click="activeDetailTab = 'forms'">
             {{ t.teamForms }}
         </button>
+        <button type="button" :class="{ active: activeDetailTab === 'documents' }" @click="activeDetailTab = 'documents'">{{ t.documents }}</button>
     </section>
 
     <section v-else class="tournament-status-tabs" aria-label="Tournament status">
@@ -517,6 +519,7 @@ function downloadParticipants() {
         </article>
     </section>
 
+    <ChampionshipDocuments v-else-if="!isTournamentDetail && activeDetailTab === 'documents'" :championship-id="championship.id" :t="t" />
     <section v-else-if="!isTournamentDetail" class="team-forms-list">
         <article v-if="forms.length === 0" class="tournament-empty">
             {{ t.emptyTeamForms }}
@@ -757,18 +760,6 @@ function downloadParticipants() {
 
             <section class="modal-section full three-columns documents-section">
                 <h3>{{ t.documents }}</h3>
-                <FileDropzone
-                    v-model="tournamentForm.regulation_document"
-                    :hint="t.fileDropHint"
-                    :label="t.regulationDocument"
-                    :placeholder="t.dropFile"
-                />
-                <FileDropzone
-                    v-model="tournamentForm.application_document"
-                    :hint="t.fileDropHint"
-                    :label="t.applicationDocument"
-                    :placeholder="t.dropFile"
-                />
                 <FileDropzone
                     v-model="tournamentForm.logo_report"
                     accept="image/jpeg,image/png,image/webp"

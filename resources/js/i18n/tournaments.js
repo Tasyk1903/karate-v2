@@ -1,5 +1,8 @@
 export const tournamentTranslations = {
     ru: {
+        championshipAddDocument: 'Добавить документ', championshipDocumentName: 'Название документа', championshipDocumentFile: 'Файл',
+        championshipDocumentLimit: 'PDF, Word, Excel или изображение, до 20 МБ', championshipNoDocuments: 'Документов пока нет',
+        championshipOpenDocument: 'Открыть документ', championshipDeleteDocument: 'Удалить документ?',
         tourChampionshipName: 'Название чемпионата',
         tourEditChampionship: 'Редактировать чемпионат', tourDelete: 'Удалить турнир',
         tourDeleteConfirm: 'Турнир исчезнет из рабочих списков. Участники, результаты и файлы сохранятся в архиве.',
@@ -19,6 +22,9 @@ export const tournamentTranslations = {
         tourDetachConfirm: 'Открепить тренера от турнира?', tourEmpty: 'Записей нет', tourSaved: 'Турнир обновлён',
     },
     en: {
+        championshipAddDocument: 'Add document', championshipDocumentName: 'Document title', championshipDocumentFile: 'File',
+        championshipDocumentLimit: 'PDF, Word, Excel or image, up to 20 MB', championshipNoDocuments: 'No documents yet',
+        championshipOpenDocument: 'Open document', championshipDeleteDocument: 'Delete document?',
         tourChampionshipName: 'Championship name',
         tourEditChampionship: 'Edit championship', tourDelete: 'Delete tournament',
         tourDeleteConfirm: 'The tournament will disappear from working lists. Participants, results and files will remain archived.',

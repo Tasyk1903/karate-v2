@@ -173,6 +173,12 @@ class RatingServiceTest extends TestCase
         $this->assertNotContains('Бета Спортсмен', $names);
         $this->assertArrayHasKey($secondOrganization->id, $mobile['filter_options']['organizations']);
         $this->assertSame($firstOrganization->id, $mobile['filters']['organization_id']);
+
+        $allCoaches = $this->getJson('/api/mobile/rating?year=2026&discipline=kumite')->assertOk();
+        $rankedCoaches = collect($allCoaches['trainer_ranking']['items'])->keyBy('id');
+        $this->assertSame(asset('storage/'.$firstCoach->avatar), $rankedCoaches[$firstCoach->id]['avatar_url']);
+        $this->assertSame(asset('storage/'.$secondCoach->avatar), $rankedCoaches[$secondCoach->id]['avatar_url']);
+        $this->assertNotNull($allCoaches['trainer_ranking']['leader']['avatar_url']);
     }
 
     public function test_rating_normalizes_discipline_and_dependent_weight_filters(): void
@@ -238,6 +244,7 @@ class RatingServiceTest extends TestCase
             'wins' => $item['wins_count'],
         ])->all());
         $this->assertSame(0, $result2023['summary']['groups_count']);
+        $this->assertSame($coach->avatar, $result2026['trainerRanking']['leader']['avatar']);
     }
 
     private function organizationWithCoach(string $organizationName = 'Организация'): array
@@ -255,6 +262,7 @@ class RatingServiceTest extends TestCase
             'password' => 'password',
             'organization_id' => $organization->id,
             'club' => $organizationName.' клуб',
+            'avatar' => 'avatars/'.uniqid('coach-', true).'.jpg',
         ]);
 
         return [$organization, $coach];

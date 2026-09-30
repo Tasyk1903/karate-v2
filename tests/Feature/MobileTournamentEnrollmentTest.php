@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\RunPanelTask;
 use App\Models\Championship;
+use App\Models\ChampionshipDocument;
 use App\Models\ListTournament;
 use App\Models\MobileAccessToken;
 use App\Models\PanelTask;
@@ -326,7 +327,8 @@ class MobileTournamentEnrollmentTest extends TestCase
         Storage::fake('public');
         Storage::disk('public')->put('tournaments/regulation.pdf', '%PDF-test');
         $this->tournament->update(['chief_judge' => 'Judge', 'chief_secretary' => 'Secretary', 'regulation_document' => 'tournaments/regulation.pdf', 'logo_report' => 'private-logo.png']);
-        $this->getJson($this->base())->assertOk()->assertJsonPath('tournament.chief_judge', 'Judge')->assertJsonPath('tournament.chief_secretary', 'Secretary')->assertJsonCount(1, 'tournament.documents')->assertJsonMissingPath('tournament.logo_report');
+        ChampionshipDocument::create(['championship_id' => $this->tournament->championship_id, 'name' => 'Regulation', 'file_name' => 'regulation.pdf', 'path' => 'tournaments/regulation.pdf', 'disk' => 'public']);
+        $this->getJson($this->base())->assertOk()->assertJsonPath('tournament.chief_judge', 'Judge')->assertJsonPath('tournament.chief_secretary', 'Secretary')->assertJsonCount(0, 'tournament.documents')->assertJsonMissingPath('tournament.logo_report');
         $this->get($this->base().'/documents/regulation_document')->assertOk()->assertHeader('X-Content-Type-Options', 'nosniff');
         $this->get($this->base().'/documents/logo_report')->assertNotFound();
     }

@@ -12,6 +12,11 @@ final class TournamentInput
     public static function validated(Request $request): array
     {
         app()->setLocale($request->input('locale') === 'en' ? 'en' : 'ru');
+        foreach (['regulation_document', 'application_document'] as $field) {
+            if ($request->hasFile($field) || $request->boolean('remove_'.$field)) {
+                throw ValidationException::withMessages([$field => __('tour.documents_on_championship')]);
+            }
+        }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'region_id' => ['required', 'integer', 'exists:regions,id'],

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChampionshipDocumentController;
 use App\Http\Controllers\Mobile\MobileAboutController;
 use App\Http\Controllers\Mobile\MobileAccountController;
 use App\Http\Controllers\Mobile\MobileAgreementController;
@@ -150,6 +151,9 @@ Route::prefix('mobile')->group(function (): void {
 
     Route::middleware(['mobile.auth', MobileAppMember::class, MobileAgreementConsent::class, MobileRoles::class.':Coach,Student'])->group(function (): void {
         Route::get('championships', [MobileTournamentController::class, 'index']);
+        Route::get('championships/{championship}/documents', [ChampionshipDocumentController::class, 'index']);
+        Route::get('championships/{championship}/documents/{document}/file', [ChampionshipDocumentController::class, 'file']);
+        Route::get('championships/{championship}/documents/{document}/link', [ChampionshipDocumentController::class, 'link']);
         Route::post('championships/{championship}/tournaments/{tournament}/exports', [MobileTournamentListController::class, 'queueExport'])->middleware('throttle:6,1');
         Route::get('tasks/{task}', [PanelTaskController::class, 'show']);
         Route::get('tasks/{task}/file', [PanelTaskController::class, 'file']);

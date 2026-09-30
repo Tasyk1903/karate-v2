@@ -95,7 +95,7 @@ class MobileFeedTest extends TestCase
         $this->getJson('/api/mobile/feed?scope=students')->assertOk()->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.id', $child->id);
         $this->getJson('/api/mobile/feed?scope=coaches')->assertOk()->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.id', $mine->id);
         $this->getJson('/api/mobile/feed?scope=organization')->assertOk()->assertJsonPath('data.0.id', $child->id);
-        $this->getJson('/api/mobile/feed?scope=mine')->assertOk()->assertJsonPath('data.0.id', $mine->id);
+        $this->getJson('/api/mobile/feed?scope=mine')->assertOk()->assertJsonPath('meta.total', 2);
         $this->coach->forceFill(['selected_organization' => $this->org->id])->save();
         $this->getJson('/api/mobile/feed')->assertOk()->assertJsonPath('meta.total', 1)->assertJsonPath('data.0.id', $child->id);
         $this->coach->forceFill(['city_id' => null])->save();
@@ -127,7 +127,7 @@ class MobileFeedTest extends TestCase
     public function test_every_hidden_post_and_comment_action_denies_before_read_or_mutation(string $role): void
     {
         $this->actorRole($role);
-        $hidden = $this->makePost(['city_id' => FeedRegion::create(['city' => 'Hidden'])->id]);
+        $hidden = $this->makePost(['user_id' => $this->user('Coach')->id, 'city_id' => FeedRegion::create(['city' => 'Hidden'])->id]);
         $comment = $this->comment($hidden);
         $this->getJson('/api/mobile/feed/'.$hidden->id)->assertNotFound();
         $this->getJson('/api/mobile/feed/'.$hidden->id.'/comments')->assertNotFound();
@@ -143,6 +143,28 @@ class MobileFeedTest extends TestCase
         $this->assertDatabaseCount('comments', 1);
         $this->assertDatabaseCount('reactions', 0);
         $this->assertSame(0, $this->logs());
+    }
+
+    #[DataProvider('actorRoles')]
+    public function test_own_history_ignores_feed_filters_without_exposing_foreign_posts(string $role): void
+    {
+        $this->actorRole($role);
+        $otherCity = FeedRegion::create(['city' => 'Other city']);
+        $own = $this->makePost(['city_id' => $otherCity->id]);
+        $foreign = $this->makePost(['user_id' => $this->user('Coach')->id, 'city_id' => $otherCity->id]);
+        for ($i = 0; $i < 11; $i++) {
+            $this->makePost(['city_id' => $otherCity->id]);
+        }
+        $this->coach->update(['selected_organization' => $this->org->id]);
+        $this->getJson('/api/mobile/feed')->assertOk()->assertJsonPath('meta.total', 0);
+        $this->getJson('/api/mobile/feed?scope=mine')->assertOk()->assertJsonPath('meta.total', 12)->assertJsonCount(10, 'data');
+        $this->getJson('/api/mobile/feed?scope=mine&page=2')->assertOk()->assertJsonCount(2, 'data')->assertJsonPath('data.1.id', $own->id);
+        $this->getJson('/api/mobile/feed/'.$own->id)->assertOk();
+        $this->getJson('/api/mobile/feed/'.$own->id.'/comments')->assertOk();
+        $this->putJson('/api/mobile/feed/'.$own->id, ['text' => 'Updated own post'])->assertOk();
+        $this->getJson('/api/mobile/feed/'.$foreign->id)->assertNotFound();
+        $this->putJson('/api/mobile/feed/'.$foreign->id, ['text' => 'Forbidden'])->assertNotFound();
+        $this->assertSame('Post', $foreign->fresh()->text);
     }
 
     #[DataProvider('actorRoles')]

@@ -1,5 +1,8 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const { createHash } = require('node:crypto');
+const path = require('node:path');
 const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
 
 (async () => {
@@ -33,16 +36,28 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
         assert.equal(await page.locator('.landing-nav .landing-brand img').getAttribute('src'), '/assets/auth/kr.jpg');
         assert.match(await page.locator('.landing-nav .landing-brand').innerText(), /Kumite Rating/);
         assert.match(await page.locator('.landing-footer-bottom p').innerText(), /^© 2024 Kumite Rating\./);
-        assert.equal(await page.locator('.landing-download-inner>img').getAttribute('src'), '/assets/landing/download-phones-moscow-kyokushin.webp');
+        assert.equal(await page.locator('.landing-download-inner>img').getAttribute('src'), '/assets/landing/download-phones-moscow-martial-arts.webp');
         assert(await page.evaluate(() => document.documentElement.scrollHeight - (document.querySelector('.landing-footer').getBoundingClientRect().bottom + scrollY)) <= 1, 'no scrollable strip below footer');
         const symbols = page.locator('.landing-hero-kanji, .landing-kanji');
-        assert.equal(await symbols.count(), 3);
-        assert.equal(await symbols.evaluateAll(images => images.every(img => img.getAttribute('src') === '/assets/landing/kyokushinkai-symbol.webp')), true, 'shared Kyokushinkai symbol');
-        assert.equal(await page.locator('.landing-hero-image, .landing-tournament-art, .landing-detail-art, .landing-download-inner>img').evaluateAll(images => images.length === 7 && images.every(img => img.getAttribute('src').endsWith('-kyokushin.webp'))), true, 'edited illustration assets');
+        assert.equal(await symbols.count(), 0, 'no decorative calligraphy');
+        const russian = await page.evaluate(() => localStorage.getItem('kr-locale')) === 'ru';
+        assert.equal(await page.locator('.landing-hero h1').textContent(), russian ? 'Единоборства\nобъединяют.Технологии\nразвивают.' : 'Martial arts\nunite.Technology\nempowers.');
+        assert.match(await page.locator('.landing-hero-description').textContent(), russian ? /кто живёт спортом/ : /who lives for sport/);
+        assert.doesNotMatch(await page.locator('.kr-landing').innerText(), /карат[эе]|киокушин|karate|kyokushin|[\u3400-\u9fff]/i);
+        assert.equal(await page.locator('.landing-hero-image, .landing-tournament-art, .landing-detail-art, .landing-download-inner>img').evaluateAll(images => images.length === 7 && images.every(img => img.getAttribute('src').endsWith('-martial-arts.webp'))), true, 'edited illustration assets');
         assert.equal(await page.locator('.landing-role, .landing-platform-item, .landing-detail-copy, .landing-footer-top').evaluateAll(elements => elements.every(element => element.scrollWidth <= element.clientWidth + 1)), true, 'content overflow');
+        const windows = page.locator('#app .landing-windows-download');
+        assert.equal(await windows.getAttribute('href'), '/downloads/KumiteRating-Offline-Setup.exe');
+        assert.equal(await windows.getAttribute('download'), 'KumiteRating-Offline-Setup.exe');
+        assert.equal(await windows.locator('strong').textContent(), russian ? 'Скачать для Windows' : 'Download for Windows');
+        assert.equal(await windows.evaluate(element => {
+            const box = element.getBoundingClientRect();
+            const parent = element.closest('.landing-download-copy').getBoundingClientRect();
+            return box.right <= parent.right + 1 && element.scrollWidth <= element.clientWidth + 1;
+        }), true, 'Windows download fits its column');
     }
     async function inspectTransparency() {
-        const assets = page.locator('.landing-hero-kanji, .landing-detail-1 img, .landing-detail-2 img, .landing-detail-3 img, .landing-download-inner>img');
+        const assets = page.locator('.landing-detail-1 img, .landing-detail-2 img, .landing-detail-3 img, .landing-download-inner>img');
         const samples = await assets.evaluateAll(images => images.map(img => {
             const canvas = document.createElement('canvas');
             canvas.width = 64; canvas.height = 96;
@@ -56,7 +71,7 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
             }
             return { src: img.getAttribute('src'), transparent, opaque };
         }));
-        assert.equal(samples.length, 5);
+        assert.equal(samples.length, 4);
         for (const sample of samples) {
             assert(sample.transparent > 64 * 96 * 0.05, `${sample.src}: transparent background`);
             assert(sample.opaque > 64 * 96 * 0.1, `${sample.src}: visible image content`);
@@ -66,7 +81,7 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
         await page.goto(base);
         for (const locale of ['ru', 'en']) {
             await page.evaluate(value => localStorage.setItem('kr-locale', value), locale);
-            for (const [width, height] of [[736,950],[1024,900],[1440,1000],[1920,1080],[768,1024],[360,800],[393,852],[430,932]]) {
+            for (const [width, height] of [[736,950],[1024,900],[1440,1000],[1920,1080],[768,1024],[600,900],[601,900],[800,900],[801,900],[1100,900],[1101,900],[360,800],[393,852],[430,932]]) {
                 await page.setViewportSize({ width, height });
                 await page.goto(base);
                 await inspect();
@@ -82,10 +97,20 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
                 await page.locator('.landing-hero-content .landing-store').first().click();
                 await page.locator('dialog[open] .landing-publication-status').waitFor();
                 assert.equal(await page.locator('dialog[open] .landing-store:disabled').count(), 2);
+                assert.equal(await page.locator('dialog[open] .landing-windows-download').count(), 1);
                 await page.keyboard.press('Escape');
             }
         }
         await inspectTransparency();
+        const downloaded = page.waitForEvent('download');
+        await page.locator('#app .landing-windows-download').click();
+        const installer = await downloaded;
+        assert.equal(installer.suggestedFilename(), 'KumiteRating-Offline-Setup.exe');
+        assert.equal(await installer.failure(), null);
+        const bytes = readFileSync(await installer.path());
+        assert.equal(bytes.subarray(0, 2).toString(), 'MZ', 'real Windows executable, not an HTML fallback');
+        const digest = value => createHash('sha256').update(value).digest('hex');
+        assert.equal(digest(bytes), digest(readFileSync(path.join(__dirname, '../../public/downloads/KumiteRating-Offline-Setup.exe'))), 'download is the complete installer');
         await page.locator('.landing-tournament-copy .landing-primary').click();
         assert.equal(await page.locator('dialog[open] .landing-checklist li').count(), 5);
         await page.locator('dialog[open] a[href="#app"]').click();
@@ -109,6 +134,6 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
         await page.locator('.landing-role').nth(2).click();
         await page.waitForURL('**/login');
         assert.deepEqual(errors, []);
-        console.log('PASS new reference landing: 16 viewports/locales, Kyokushinkai assets/alpha, copyright 2024, all sections, FAQ, downloads, documents, contacts, login');
+        console.log('PASS martial arts landing: 28 viewports/locales, Windows button and real installer download/checksum, updated assets/alpha, all sections, FAQ, documents, contacts, login');
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exit(1); });

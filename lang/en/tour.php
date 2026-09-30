@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'documents_on_championship' => 'Upload and manage files in the championship Documents section.',
     'commission_after_finish' => 'The commission deadline cannot be after the final tournament day.',
     'selection' => 'Some selected records are unavailable. Refresh the list.',
     'import_running' => 'Wait for the form import to finish.',

@@ -42,9 +42,10 @@ final class SpectatorFightPath
     {
         $regular = $pools->whereNotIn('type', ['3rd', 'Round Robin'])->sortBy(fn ($p) => [$p->round, $p->position_in_round, $p->id])->values();
         $last = (int) $regular->max('round');
-        $format = fn ($p, $status = null) => [
+        $format = fn ($p, $status = null, $side = null) => [
             'id' => $p->id, 'round' => (int) $p->round, 'stage' => $this->stage((int) $p->round, $last, $p->type),
-            'number' => $p->tatami_and_fight_number, 'tatami' => $tatami,
+            'number' => filled($p->tatami_and_fight_number) && $p->tatami_and_fight_number !== '0' ? $p->tatami_and_fight_number : null, 'tatami' => $tatami,
+            'side' => $p->student_id == $studentId ? 'white' : ($p->opponent_id == $studentId ? 'red' : $side),
             'status' => $status ?? $this->status($p, $studentId),
         ];
         $own = $pools->filter(fn ($p) => $p->student_id == $studentId || $p->opponent_id == $studentId);
@@ -60,22 +61,34 @@ final class SpectatorFightPath
         $visited = [];
         $third = $pools->firstWhere('type', '3rd');
         $thirdPossible = false;
+        $side = $start->student_id == $studentId ? 'white' : 'red';
+        $thirdSide = null;
+        $lostSemi = false;
         while ($current && ! isset($visited[$current->id])) {
             $visited[$current->id] = true;
             $status = $this->status($current, $studentId);
-            $path[] = $format($current, $status);
+            $nextRound = (int) $current->round + 1;
+            $position = intdiv((int) $current->position_in_round - 1, 2) + 1;
+            $next = $regular->first(fn ($p) => (int) $p->round === $nextRound && (int) $p->position_in_round === $position);
+            // Legacy byes/absence advances can place the student in the next fight without winner_id.
+            if ($status === 'upcoming' && $next && in_array($studentId, [(int) $next->student_id, (int) $next->opponent_id], true)) {
+                $status = 'won';
+            }
+            $path[] = $format($current, $status, $side);
             if ($current->type === '1/2' || (int) $current->round === $last - 1) {
                 $thirdPossible = ! in_array($status, ['won', 'absent'], true);
+                $thirdSide = (int) $current->position_in_round % 2 === 1 ? 'white' : 'red';
+                $lostSemi = $status === 'lost';
             }
             if (in_array($status, ['lost', 'absent'], true)) {
                 break;
             }
-            $nextRound = (int) $current->round + 1;
-            $position = intdiv((int) $current->position_in_round - 1, 2) + 1;
-            $current = $regular->first(fn ($p) => (int) $p->round === $nextRound && (int) $p->position_in_round === $position);
+            $side = (int) $current->position_in_round % 2 === 1 ? 'white' : 'red';
+            $current = $next;
         }
         if ($third && ($thirdPossible || $own->contains('id', $third->id))) {
-            $path[] = $format($third);
+            $thirdStatus = $this->status($third, $studentId);
+            $path[] = $format($third, $lostSemi && $thirdStatus === 'possible' ? 'upcoming' : $thirdStatus, $thirdSide);
         }
 
         return $path;

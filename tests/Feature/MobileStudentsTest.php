@@ -8,6 +8,7 @@ use App\Models\MobileAccessToken;
 use App\Models\User;
 use App\Models\WaitConfirmationInvitation;
 use App\Services\ProtectedMedia;
+use App\Services\Students\BeltPresentation;
 use App\Services\Students\StudentDocumentStatus;
 use App\Services\Team\AcceptStudentInvitation;
 use App\Services\Team\CoachInvitations;
@@ -51,6 +52,16 @@ class MobileStudentsTest extends TestCase
     private function user(string $role, array $data = []): User
     {
         return User::forceCreate($data + ['first_name' => 'Ivan', 'last_name' => 'Example', 'email' => uniqid().'@example.test', 'password' => Hash::make('password'), 'role_id' => DB::table('roles')->where('name', $role)->value('id')]);
+    }
+
+    public function test_list_and_profile_return_the_same_kyu_stripes(): void
+    {
+        foreach ([0, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1] as $rank) {
+            $this->student->forceFill(['rang' => $rank.' кю'])->save();
+            $expected = app(BeltPresentation::class)->forRank($rank.' кю');
+            $this->getJson('/api/mobile/students?scope=mine')->assertOk()->assertJsonPath('data.0.belt', $expected);
+            $this->getJson('/api/mobile/students/'.$this->student->id)->assertOk()->assertJsonPath('student.belt', $expected);
+        }
     }
 
     private function url(?User $student = null): string

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faInstagram, faYoutube, faTelegram } from '@fortawesome/free-brands-svg-icons';
 import LandingBrand from '../components/landing/LandingBrand.vue';
 import LandingStoreLinks from '../components/landing/LandingStoreLinks.vue';
+import LandingWindowsDownload from '../components/landing/LandingWindowsDownload.vue';
 import LandingChecklist from '../components/landing/LandingChecklist.vue';
 import LandingBeltIcon from '../components/landing/LandingBeltIcon.vue';
 import { storeLink } from '../components/landing/storeLinks';
@@ -15,8 +16,7 @@ const props = defineProps({ locale: String });
 const emit = defineEmits(['set-locale', 'navigate']);
 const t = computed(() => landingLabels[props.locale] || landingLabels.ru);
 const anchors = ['features', 'tournaments', 'examinations', 'learning', 'community', 'about'];
-const detailAssets = ['examination-belt-kyokushin', 'learning-phone-kyokushin', 'community-phone-kyokushin', 'notification-phone-kyokushin'];
-const calligraphyAsset = '/assets/landing/kyokushinkai-symbol.webp';
+const detailAssets = ['examination-belt-martial-arts', 'learning-phone-martial-arts', 'community-phone-martial-arts', 'notification-phone-martial-arts'];
 const detailIds = ['examinations', 'learning', 'community', 'extras'];
 const socials = [{ name: 'Instagram', icon: faInstagram }, { name: 'YouTube', icon: faYoutube }, { name: 'Telegram', icon: faTelegram }];
 const links = ref({}), document = ref(null), documentError = ref(''), loading = ref(false), dialog = ref(null), modal = ref(null), mobileMenu = ref(false), selectedFeature = ref(-1);
@@ -57,7 +57,7 @@ function switchLocale() { emit('set-locale', props.locale === 'ru' ? 'en' : 'ru'
 <template>
 <main class="kr-landing">
     <section class="landing-hero">
-        <img class="landing-hero-image" :src="'/assets/landing/hero-unity-kyokushin.webp'" alt="" fetchpriority="high" width="1672" height="941">
+        <img class="landing-hero-image" :src="'/assets/landing/hero-unity-martial-arts.webp'" alt="" fetchpriority="high" width="1672" height="941">
         <header class="landing-nav landing-container">
             <LandingBrand/>
             <nav class="landing-desktop-nav" :aria-label="t.menu">
@@ -82,8 +82,7 @@ function switchLocale() { emit('set-locale', props.locale === 'ru' ? 'en' : 'ru'
                 <LandingStoreLinks :t="t" :links="links" @unavailable="openModal('app')"/>
                 <div class="landing-stats"><div v-for="(number, index) in ['3 000+', '50+', '40+', '4+']" :key="number" class="landing-stat"><strong>{{ number }}</strong><span>{{ t.stats[index] }}</span></div></div>
             </div>
-            <img class="landing-hero-kanji" :src="calligraphyAsset" alt="" width="88" height="160">
-            <aside class="landing-discipline" aria-hidden="true"><img class="landing-kanji" :src="calligraphyAsset" alt="" width="58" height="110"><span>DISCIPLINE</span><span>RESPECT</span><span>PROGRESS</span><span>BETTER YOU</span><i/><span class="landing-script">{{ t.handwritten }}</span></aside>
+            <aside class="landing-discipline" aria-hidden="true"><span>DISCIPLINE</span><span>RESPECT</span><span>PROGRESS</span><span>BETTER YOU</span><i/><span class="landing-script">{{ t.handwritten }}</span></aside>
         </div>
     </section>
 
@@ -110,7 +109,7 @@ function switchLocale() { emit('set-locale', props.locale === 'ru' ? 'en' : 'ru'
     </section>
 
     <section id="tournaments" class="landing-tournaments">
-        <img class="landing-tournament-art" :src="'/assets/landing/tournament-overview-kyokushin.webp'" :alt="t.tournament.alt" width="1448" height="1086" loading="lazy">
+        <img class="landing-tournament-art" :src="'/assets/landing/tournament-overview-martial-arts.webp'" :alt="t.tournament.alt" width="1448" height="1086" loading="lazy">
         <div class="landing-container"><div class="landing-tournament-copy"><p class="landing-label"><Trophy/>{{ t.tournament.label }}</p><h2>{{ t.tournament.title }}</h2><LandingChecklist :items="t.tournament.items"/><button class="landing-primary" @click="openFeature(-1)">{{ t.tournament.action }}<ArrowRight/></button></div></div>
     </section>
 
@@ -126,22 +125,22 @@ function switchLocale() { emit('set-locale', props.locale === 'ru' ? 'en' : 'ru'
         <div class="landing-container landing-about-inner">
             <div class="landing-about-copy"><p class="landing-eyebrow">{{ t.aboutEyebrow }}</p><h2>{{ t.aboutTitle }}</h2><p>{{ t.aboutText }}</p><a class="landing-primary" href="#app">{{ t.join }}<ArrowRight/></a></div>
             <div class="landing-values"><div v-for="(value, index) in t.values" :key="index"><component :is="[ChartNoAxesColumnIncreasing, Award, UsersRound, Globe2][index]"/><span>{{ value }}</span></div></div>
-            <aside class="landing-about-motto" aria-hidden="true"><img class="landing-kanji" :src="calligraphyAsset" alt="" width="58" height="110" loading="lazy"><span>KARATE</span><span>PEOPLE</span><span>TECHNOLOGY</span><span>FUTURE</span></aside>
+            <aside class="landing-about-motto" aria-hidden="true"><span>SPORT</span><span>PEOPLE</span><span>TECHNOLOGY</span><span>FUTURE</span></aside>
         </div>
     </section>
 
     <section id="app" class="landing-download">
-        <div class="landing-container landing-download-inner"><div class="landing-download-copy"><h2>{{ t.downloadTitle }}</h2><p>{{ t.downloadText }}</p><LandingStoreLinks :t="t" :links="links" @unavailable="openModal('app')"/></div><img :src="'/assets/landing/download-phones-moscow-kyokushin.webp'" :alt="t.phonesAlt" width="1134" height="1387" loading="lazy"><span class="landing-script" aria-hidden="true">{{ t.downloadNote }}<CornerDownLeft/></span></div>
+        <div class="landing-container landing-download-inner"><div class="landing-download-copy"><h2>{{ t.downloadTitle }}</h2><p>{{ t.downloadText }}</p><LandingStoreLinks :t="t" :links="links" @unavailable="openModal('app')"/><LandingWindowsDownload :t="t"/></div><img :src="'/assets/landing/download-phones-moscow-martial-arts.webp'" :alt="t.phonesAlt" width="1122" height="1402" loading="lazy"><span class="landing-script" aria-hidden="true">{{ t.downloadNote }}<CornerDownLeft/></span></div>
     </section>
 
     <footer class="landing-footer"><div class="landing-container">
         <div class="landing-footer-top"><LandingBrand/><nav :aria-label="t.about"><a href="#about">{{ t.about }}</a><button @click="openModal('contacts')">{{ t.contacts }}</button><button @click="openDocument(2)">{{ t.privacy }}</button><button @click="openDocument(1)">{{ t.terms }}</button></nav><div class="landing-footer-actions"><button v-for="social in socials" :key="social.name" :aria-label="t.socialContact.replace('{network}', social.name)" :title="t.socialContact.replace('{network}', social.name)" @click="openModal('contacts')"><FontAwesomeIcon :icon="social.icon"/></button><button class="landing-language" :aria-label="t.language" @click="switchLocale">{{ locale.toUpperCase() }}<ChevronDown/></button></div></div>
-        <div class="landing-footer-bottom"><p>© 2024 Kumite Rating. {{ t.copyright }}</p><span class="landing-script" aria-hidden="true">{{ t.osu }}</span></div>
+        <div class="landing-footer-bottom"><p>© 2024 Kumite Rating. {{ t.copyright }}</p><span class="landing-script" aria-hidden="true">{{ t.closingNote }}</span></div>
     </div></footer>
 
     <dialog ref="dialog" class="landing-dialog" @cancel.prevent="closeModal" @click="event => event.target === dialog && closeModal()"><header><h2>{{ modalTitle }}</h2><button :aria-label="t.close" @click="closeModal"><X/></button></header>
         <template v-if="modal === 'document'"><div v-if="loading" class="landing-loading" role="status" :aria-label="t.loading"/><p v-else-if="documentError" role="alert">{{ documentError }}</p><div v-else class="landing-document-text" v-html="document?.content"/></template>
-        <template v-else-if="modal === 'app'"><p>{{ t.appText }}</p><LandingStoreLinks :t="t" :links="links" status-only/><p v-if="!storeLink(links.ios) || !storeLink(links.android)" class="landing-publication-status" role="status">{{ t.soon }}</p><a href="/login" class="landing-panel-link" @click.prevent="login">{{ t.panel }}<ArrowRight/></a></template>
+        <template v-else-if="modal === 'app'"><p>{{ t.appText }}</p><LandingStoreLinks :t="t" :links="links" status-only/><p v-if="!storeLink(links.ios) || !storeLink(links.android)" class="landing-publication-status" role="status">{{ t.soon }}</p><LandingWindowsDownload :t="t"/><a href="/login" class="landing-panel-link" @click.prevent="login">{{ t.panel }}<ArrowRight/></a></template>
         <template v-else-if="modal === 'feature'"><h3>{{ feature.title }}</h3><LandingChecklist :items="feature.items"/><a class="landing-primary" href="#app" @click="closeModal">{{ t.download }}<ArrowRight/></a><a href="/login" class="landing-panel-link" @click.prevent="login">{{ t.panel }}<ArrowRight/></a></template>
         <template v-else-if="modal === 'contacts'"><a v-if="email" class="landing-contact" :href="'mailto:' + email"><Mail/>{{ email }}</a><p v-else>{{ t.error }}</p></template>
         <div v-else-if="modal === 'faq'" class="landing-faq"><details v-for="item in t.faqItems" :key="item[0]"><summary>{{ item[0] }}</summary><p>{{ item[1] }}</p></details></div>

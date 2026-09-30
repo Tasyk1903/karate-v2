@@ -303,6 +303,7 @@ class RatingService
                     'student_organization_id' => $student->organization_id,
                     'coach_organization_id' => $student->coach?->organization_id,
                     'coach_id' => $student->coach?->id,
+                    'coach_avatar' => $student->coach?->avatar,
                     'coach_name' => trim(($student->coach?->last_name ?? '').' '.($student->coach?->first_name ?? '')),
                     'coach_club' => $student->coach?->club,
                     'coach_label' => $this->formatCoachLabel(
@@ -381,6 +382,7 @@ class RatingService
                     'student_organization_id' => $student->organization_id,
                     'coach_organization_id' => $student->coach?->organization_id,
                     'coach_id' => $student->coach?->id,
+                    'coach_avatar' => $student->coach?->avatar,
                     'coach_name' => trim(($student->coach?->last_name ?? '').' '.($student->coach?->first_name ?? '')),
                     'coach_club' => $student->coach?->club,
                     'coach_label' => $this->formatCoachLabel(
@@ -620,6 +622,7 @@ class RatingService
             'avatar' => $athlete['avatar'],
             'coach_label' => $athlete['coach_label'],
             'coach_id' => $athlete['coach_id'] ?? null,
+            'coach_avatar' => $athlete['coach_avatar'] ?? null,
             'coach_name' => $athlete['coach_name'] ?? null,
             'coach_club' => $athlete['coach_club'] ?? null,
             'rating_points' => $athlete['rating_points'],
@@ -654,6 +657,7 @@ class RatingService
                 if (! isset($coachResults[$coachId])) {
                     $coachResults[$coachId] = [
                         'coach_id' => $coachId,
+                        'avatar' => $item['coach_avatar'] ?? null,
                         'coach_name' => $item['coach_name'] ?: $item['coach_label'],
                         'coach_club' => $item['coach_club'] ?? null,
                         'fighters' => [],
@@ -683,6 +687,7 @@ class RatingService
 
                 return [
                     'coach_id' => $coach['coach_id'],
+                    'avatar' => $coach['avatar'],
                     'full_name' => $coach['coach_name'],
                     'coach_label' => $coach['coach_club'] ?: __('exports.no_club'),
                     'rating_points' => (int) $fighters->sum('points'),

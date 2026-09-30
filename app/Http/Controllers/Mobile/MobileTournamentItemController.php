@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Mobile;
 
+use App\Http\Controllers\ChampionshipDocumentController;
 use App\Http\Controllers\Controller;
 use App\Models\Championship;
+use App\Models\ChampionshipDocument;
 use App\Models\EducationKlassCategory;
 use App\Models\KataPool;
 use App\Models\ListTournament;
@@ -57,7 +59,10 @@ class MobileTournamentItemController extends Controller
         $this->authorizeTournamentView($request->user(), $championship, $tournament);
         abort_unless(in_array($field, ['regulation_document', 'application_document'], true), 404);
 
-        return app(ProtectedMedia::class)->response($tournament->{$field});
+        $document = ChampionshipDocument::where('championship_id', $championship->id)
+            ->where('path', app(ProtectedMedia::class)->storedPath((string) $tournament->{$field}))->firstOrFail();
+
+        return app(ChampionshipDocumentController::class)->file($request, $championship, $document);
     }
 
     public function students(Request $request, Championship $championship, Tournament $tournament): JsonResponse
@@ -419,7 +424,7 @@ class MobileTournamentItemController extends Controller
             'tatami' => $tournament->tatami,
             'ky_up_to_8' => (bool) $tournament->KY_up_to_8,
             'ky_from_8' => (bool) $tournament->KY_from_8,
-            'documents' => collect(['regulation_document', 'application_document'])->filter(fn ($field) => filled($tournament->{$field}))->map(fn ($field) => ['key' => $field, 'url' => "/championships/{$tournament->championship_id}/tournaments/{$tournament->id}/documents/{$field}", 'name' => basename($tournament->{$field})])->values(),
+            'documents' => [],
             'price_label' => $tournament->price !== null ? number_format((float) $tournament->price, 0, ',', ' ').' ₽' : '',
             'can_attach_students' => $isOnlinePointKata
                 ? ($this->canCoachAttachOnlineKata($coach, $tournament) && ($coach->projectRoleNames() !== ['Student'] || ! app(CoachTournamentEnrollment::class)->personalMemberships($tournament, $coach->id)->exists()))

@@ -221,6 +221,37 @@ class MobileSpectatorTest extends TestCase
         $this->assertSame(['lost', 'upcoming'], array_column($path, 'status'));
     }
 
+    public function test_path_preserves_numbers_predicts_sides_and_strikes_completed_legacy_advances(): void
+    {
+        $list = $this->list('kumite');
+        $a = $this->student();
+        $b = $this->student();
+        $quarter = $this->pool($list, ['type' => '1/4', 'round' => 1, 'position_in_round' => 2, 'student_id' => $b->id, 'opponent_id' => $a->id, 'tatami_and_fight_number' => 'B-12']);
+        $semi = $this->pool($list, ['type' => '1/2', 'round' => 2, 'position_in_round' => 1, 'tatami_and_fight_number' => 'B-24']);
+        $final = $this->pool($list, ['type' => 'final', 'round' => 3, 'position_in_round' => 1, 'tatami_and_fight_number' => 'B-30']);
+        $third = $this->pool($list, ['type' => '3rd', 'round' => 4, 'position_in_round' => 1, 'tatami_and_fight_number' => 'B-29']);
+        $service = app(SpectatorFightPath::class);
+        $pools = collect([$quarter, $semi, $final, $third]);
+        $path = $service->build($pools, $a->id, 'B');
+        $this->assertSame(['B-12', 'B-24', 'B-30', 'B-29'], array_column($path, 'number'));
+        $this->assertSame(['red', 'red', 'white', 'white'], array_column($path, 'side'));
+        $quarter->winner_id = $b->id;
+        $this->assertSame(['lost'], array_column($service->build($pools, $a->id, 'B'), 'status'));
+        $quarter->winner_id = null;
+        $semi->opponent_id = $a->id;
+        $semi->student_id = $b->id;
+        $this->assertSame('won', $service->build($pools, $a->id, 'B')[0]['status']);
+        $semi->winner_id = $b->id;
+        $this->assertSame(['won', 'lost', 'upcoming'], array_column($service->build($pools, $a->id, 'B'), 'status'));
+        $third->student_id = $a->id;
+        $third->winner_id = $a->id;
+        $this->assertSame(['won', 'lost', 'won'], array_column($service->build($pools, $a->id, 'B'), 'status'));
+        $third->student_id = null;
+        $third->winner_id = null;
+        $semi->absent_opponent = true;
+        $this->assertSame(['won', 'absent'], array_column($service->build($pools, $a->id, 'B'), 'status'));
+    }
+
     public function test_real_list_exports_render_without_private_fields_or_formula_execution(): void
     {
         $list = $this->list('group');

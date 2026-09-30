@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\StudentRegistrationController;
 use App\Http\Controllers\Auth\TrainerRegistrationController;
+use App\Http\Controllers\ChampionshipDocumentController;
 use App\Http\Controllers\Panel\AboutController;
 use App\Http\Controllers\Panel\Account\AgreementController;
 use App\Http\Controllers\Panel\Account\DashboardController;
@@ -52,6 +53,8 @@ Route::post('/api/auth/student-registration/confirm', [StudentRegistrationContro
 Route::post('/api/auth/trainer-registration', [TrainerRegistrationController::class, 'store'])->middleware(['guest', 'throttle:5,1']);
 Route::post('/api/auth/trainer-registration/confirm', [TrainerRegistrationController::class, 'confirm'])->middleware(['guest', 'throttle:10,1']);
 Route::get('/storage/{path}', PublicMediaController::class)->where('path', '.*');
+Route::get('/championship-documents/{championship}/{document}/open', [ChampionshipDocumentController::class, 'open'])
+    ->middleware(['signed', 'throttle:60,1'])->name('championship-document.open');
 Route::get('/api/auth/user', [LoginController::class, 'user'])->middleware('auth');
 Route::post('/api/auth/logout', [LoginController::class, 'destroy'])->middleware('auth');
 Route::get('/api/external-form/{token}', [PublicExternalFormController::class, 'show']);
@@ -78,6 +81,11 @@ Route::middleware(['auth', PanelAgreementConsent::class])->prefix('api/panel')->
         Route::post('agreements/{agreement}/accept', [AgreementController::class, 'accept'])->whereNumber('agreement');
     });
     Route::get('files/users/{owner}/{document}', ProtectedDocumentController::class);
+    Route::get('tournaments/{championship}/documents', [ChampionshipDocumentController::class, 'index']);
+    Route::post('tournaments/{championship}/documents', [ChampionshipDocumentController::class, 'store']);
+    Route::put('tournaments/{championship}/documents/{document}', [ChampionshipDocumentController::class, 'update']);
+    Route::delete('tournaments/{championship}/documents/{document}', [ChampionshipDocumentController::class, 'destroy']);
+    Route::get('tournaments/{championship}/documents/{document}/file', [ChampionshipDocumentController::class, 'file']);
     Route::get('about', AboutController::class);
     Route::get('settings', [OrganizationSettingsController::class, 'show']);
     Route::put('settings', [OrganizationSettingsController::class, 'update']);

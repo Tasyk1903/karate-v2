@@ -76,7 +76,7 @@ class TournamentManagementWorkflowTest extends TestCase
         $kata = KataPool::forceCreate(['student_id' => $student->id, 'tournament_id' => $this->tournament->id, 'list_id' => $list->id, 'round' => 'FINAL']);
         $params = ['championship' => $this->champ->id, 'tournament' => $this->tournament->id, 'list' => $list->id,
             'listTournament' => $list->id, 'form' => $form->id, 'run' => 99999, 'membership' => 99999, 'studentTournament' => $application->id,
-            'pool' => $pool->id, 'kataPool' => $kata->id, 'coach' => $this->secretary->id, 'type' => 'kumite_protocols', 'kind' => 'coaches', 'round' => 'first'];
+            'pool' => $pool->id, 'kataPool' => $kata->id, 'coach' => $this->secretary->id, 'type' => 'kumite_protocols', 'kind' => 'coaches', 'round' => 'first', 'document' => 99999];
         $routes = collect(app('router')->getRoutes())->filter(fn ($r) => str_starts_with($r->uri(), 'api/panel/tournaments/{championship}'));
         $tables = ['championships', 'tournaments', 'external_forms', 'list_tournaments', 'pools', 'kata_pools', 'student_tournaments', 'activity_log', 'panel_tasks'];
         foreach ($actors as $actor) {
@@ -91,7 +91,8 @@ class TournamentManagementWorkflowTest extends TestCase
             foreach ($routes as $route) {
                 $uri = preg_replace_callback('/\\{(\\w+)\\}/', fn ($m) => $params[$m[1]], $route->uri());
                 $response = $this->json($route->methods()[0], '/'.$uri);
-                $this->assertContains($response->status(), $actor ? [403, 404] : [401, 403, 404], ($actor?->role_id ?? 'guest').' '.$uri.' '.$response->getContent());
+                $readDocuments = $actor?->hasProjectRole('Coach') && str_ends_with($uri, '/documents') && $route->methods()[0] === 'GET';
+                $this->assertContains($response->status(), $readDocuments ? [200] : ($actor ? [403, 404] : [401, 403, 404]), ($actor?->role_id ?? 'guest').' '.$uri.' '.$response->getContent());
             }
             $after = collect($tables)->mapWithKeys(fn ($table) => [$table => DB::table($table)->get()->toJson()])->all();
             $this->assertSame($before, $after);
@@ -146,14 +147,16 @@ class TournamentManagementWorkflowTest extends TestCase
     {
         $this->tournament->update(['regulation_document' => 'regulation_document/old.pdf', 'application_document' => 'application_document/old.pdf']);
         Storage::disk('public')->put('regulation_document/old.pdf', 'old');
-        $this->post($this->base(), $this->input() + ['_method' => 'PUT', 'regulation_document' => UploadedFile::fake()->create('new.pdf', 10, 'application/pdf'), 'logo_report' => UploadedFile::fake()->image('logo.png'), 'accepts_organization_applications' => '1'], ['Accept' => 'application/json'])->assertOk()->assertJsonPath('tournament.accepts_organization_applications', true);
+        $this->post($this->base(), $this->input() + ['_method' => 'PUT', 'regulation_document' => UploadedFile::fake()->create('new.pdf', 10, 'application/pdf')], ['Accept' => 'application/json'])->assertUnprocessable();
+        $this->post($this->base(), $this->input() + ['_method' => 'PUT', 'logo_report' => UploadedFile::fake()->image('logo.png'), 'accepts_organization_applications' => '1'], ['Accept' => 'application/json'])->assertOk()->assertJsonPath('tournament.accepts_organization_applications', true);
         $fresh = $this->tournament->fresh();
         Storage::disk('public')->assertExists($fresh->regulation_document);
-        Storage::disk('public')->assertMissing('regulation_document/old.pdf');
+        Storage::disk('public')->assertExists('regulation_document/old.pdf');
         Storage::disk('public')->assertExists($fresh->logo_report);
         $this->assertSame('application_document/old.pdf', $fresh->application_document);
-        $this->putJson($this->base(), $this->input() + ['remove_application_document' => true, 'remove_logo_report' => true])->assertOk();
-        $this->assertNull($this->tournament->fresh()->application_document);
+        $this->putJson($this->base(), $this->input() + ['remove_application_document' => true])->assertUnprocessable();
+        $this->putJson($this->base(), $this->input() + ['remove_logo_report' => true])->assertOk();
+        $this->assertSame('application_document/old.pdf', $this->tournament->fresh()->application_document);
         $this->assertNull($this->tournament->fresh()->logo_report);
         $this->assertSame($fresh->regulation_document, $this->tournament->fresh()->regulation_document);
         $this->post($this->base(), $this->input() + ['_method' => 'PUT', 'logo_report' => UploadedFile::fake()->create('bad.html', 10, 'text/html')], ['Accept' => 'application/json'])->assertUnprocessable();

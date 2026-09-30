@@ -204,8 +204,6 @@ class BaseTournamentController extends Controller
                 'lists_pdf' => url("/api/panel/tournaments/{$tournament->championship_id}/items/{$tournament->id}/downloads/lists-pdf"),
             ],
             'documents' => [
-                ['key' => 'regulation_document', 'label' => __('exports.regulation'), 'url' => $this->assetUrl($tournament->regulation_document)],
-                ['key' => 'application_document', 'label' => __('exports.application'), 'url' => $this->assetUrl($tournament->application_document)],
                 ['key' => 'logo_report', 'label' => __('exports.report_logo'), 'url' => $this->assetUrl($tournament->logo_report)],
             ],
         ]);

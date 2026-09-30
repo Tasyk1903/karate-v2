@@ -112,8 +112,6 @@ const editForm = reactive(blankEditForm());
 const { request: overviewRequest, run: runOverview, busy: overviewBusy, error: overviewError } = useAccountRequest(() => props.t);
 const overviewSaved = ref(false);
 const assetFields = computed(() => [
-    { key: 'regulation_document', label: props.t.regulationDocument, accept: '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp' },
-    { key: 'application_document', label: props.t.applicationDocument, accept: '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp' },
     { key: 'logo_report', label: props.t.reportLogo, accept: 'image/jpeg,image/png,image/webp' },
 ]);
 function currentAsset(key) { return props.tournament.documents?.find(document => document.key === key)?.url; }
@@ -574,8 +572,8 @@ function blankEditForm() {
         chief_judge: '',
         chief_secretary: '',
         accepts_organization_applications: false,
-        regulation_document: null, application_document: null, logo_report: null,
-        remove_regulation_document: false, remove_application_document: false, remove_logo_report: false,
+        logo_report: null,
+        remove_logo_report: false,
     };
 }
 

@@ -4631,9 +4631,9 @@ a.table-icon-button {
     border-radius: 14px;
     box-shadow: var(--panel-shadow);
     display: inline-grid;
-    grid-template-columns: repeat(2, minmax(150px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     overflow: hidden;
-    width: min(400px, 100%);
+    width: min(560px, 100%);
 }
 
 .championship-detail-tabs button {
@@ -4644,7 +4644,8 @@ a.table-icon-button {
     cursor: pointer;
     font-size: 13px;
     font-weight: 900;
-    height: 46px;
+    min-height: 46px;
+    padding: 8px;
 }
 
 .championship-detail-tabs button.active {

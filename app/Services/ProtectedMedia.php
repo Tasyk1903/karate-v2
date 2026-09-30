@@ -18,6 +18,8 @@ final class ProtectedMedia
         'education_klass_videos' => ['path'],
         'education_kata_videos' => ['path', 'poster_path'],
         'kata_competitions_videos' => ['path', 'poster_path'],
+        'championship_documents' => ['path'],
+        'tournaments' => ['regulation_document', 'application_document'],
     ];
 
     public const DIRECTORIES = ['passport', 'passports', 'brand', 'brands', 'insurance', 'iko_card', 'certificate', 'online-kata-videos', 'video', 'videos'];

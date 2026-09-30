@@ -25,7 +25,7 @@ class TournamentItemController extends BaseTournamentController
         $data = TournamentInput::validated($request);
         $attributes = TournamentInput::attributes($data) + ['championship_id' => $championship->id, 'organization_id' => $this->organizationId($request->user())];
         $tournament = app(TournamentAssetUpdate::class)->save(new Tournament, $attributes, $request,
-            ['regulation_document' => 'regulation_document', 'application_document' => 'application_document', 'logo_report' => 'logo_report'],
+            ['logo_report' => 'logo_report'],
             fn (Tournament $tournament) => $this->writeTournamentActivity($request->user(), 'Создан турнир', 'tournament.created', Tournament::class, $tournament->id,
                 ['championship' => $this->championshipSnapshot($championship), 'new' => $this->tournamentSnapshot($tournament)]));
         $tournament->load(['region:id,name', 'scale:id,name', 'treners:id,club'])->loadCount(['students', 'treners']);
@@ -45,7 +45,7 @@ class TournamentItemController extends BaseTournamentController
             }
         }
         app(TournamentAssetUpdate::class)->save($tournament, $attributes, $request,
-            ['regulation_document' => 'regulation_document', 'application_document' => 'application_document', 'logo_report' => 'logo_report'],
+            ['logo_report' => 'logo_report'],
             fn (Tournament $tournament, array $before) => $this->writeTournamentActivity($request->user(), 'Турнир изменен', 'tournament.updated', Tournament::class, $tournament->id,
                 ['championship' => $this->championshipSnapshot($championship), 'old' => $before, 'new' => $this->tournamentSnapshot($tournament)]));
 
